@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<!-- {{ STATIC_URL }} -->
+  <head>
+  <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}layout.css" media="screen" />
+    <title>GetSomething</title>
+    <meta name="GetSomething application" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="{{ STATIC_URL }}assets/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <style>
+    .contentBox {
+    border-radius: 10px;
+    background: whitesmoke;
+    }
+    </style>
+	<script>
+		function redir()
+		{
+			//get feedback value
+			var rdoPrice = document.getElementsByName("rdoPrice");
+			var feedback = '';
+			for(var i = 0; i < rdoPrice.length; i++)
+			{
+				if(rdoPrice[i].checked)
+				{
+					feedback = rdoPrice[i].value;
+					break;
+				}
+			}
+			
+			//get the checkbox values
+			minPrice = document.getElementById("minPrice").checked;
+			weighted = document.getElementById("weighted").checked;
+		
+			ref = "http://localhost:8000/BuyItem/?maxPrice=" + document.getElementById("maxPrice").value + "&feedback=" + feedback + "&minPrice=" + minPrice+ "&weighted=" + weighted;
+			window.location = ref;
+		}
+	</script>
+
+  </head>
+  <body onload="" style="background-color:skyblue" onload="setLink()">
+  <div class="navbar">
+    <div class="navbar-inner">
+     <h1 class="brand" href="#">GetSomething</h1>
+     <div>
+     <p class="text-right" style="padding-top:50px;font-size:15px;">...gift yourself with a random eBay item
+     </div>
+    </div>
+  </div>
+  <div class="container">
+  <div>
+   <form>
+    <h1 class="text-center" style="font-size:45px;">surprise yourself</h1>
+   </form>
+    
+  </div>
+ <div class="container">
+ <div class="row-fluid">
+  <div class="span6 offset3 contentBox" style="background:whitesmoke;">
+  <form>
+    <fieldset>
+   
+      <div class="row-fluid">
+      
+      <div class="span3 offset3" style="padding-right:55%; margin-left:2px;">
+				<h4 id="divTitle" style="padding-left:7%"></h4>
+				
+                <div class="span4" style="padding-left:30px;">
+				{% if state != 'login'%}
+					<a class="text-center btn btn-primary" href="{{loginPage}}"   style="margin-left: 20px; width: 100px" >Login</a>
+				{% else %}
+				<h4 id="divTitle" style="padding-left:7%">Parameters</h4>
+				<div class="span5 offset2">
+					<label>max&nbsp;price</label>
+					<form method="POST" action="BuyProduct.php">
+						<input type="text" placeholder="15.00" id="maxPrice" name="maxPrice" value="15"/>
+					</form>
+					<div style="margin-left:70px;"> 
+                  <a class="btn btn-primary" id="link" onclick="redir();">GO</a>
+                  </div>
+				<table cellpadding=10 >
+				<tr style="cellspacing:9px; margin-right:9px;">
+					<td><input id="weighted" title="Weights GetSomething's randomizer such that frequently chosen categories are less likely to be chosen again." type="checkbox" value="true" {% if weighted|lower == "false" %}{% else%} checked {% endif %}/></td>
+					<td title="Weights GetSomething's randomizer such that frequently chosen categories are less likely to be chosen again.">Reduce Repitition</td>
+					<td title="Calculates a minimum price based off of the provided max price to avoid under-spending."><input id="minPrice" type="checkbox" value="true" {% if minPrice|lower == "false" %}{% else%} checked {% endif %}/></td>
+					<td title="Calculates a minimum price based off of the provided max price to avoid under-spending.">Avoid Lowballing</td>
+				</tr>
+				</table>
+				
+                </div>
+				{% endif %}
+      </div>
+	  
+    </div>
+	<!--Stars -->
+	<div >
+				<table style="padding-left:7%; position:relative; border:0px; left:45px;"> <caption><small><small>Minimum Feedback Scores:</small></small></caption>
+					<tr title="10+"><td><input type="radio" name="rdoPrice" value="10" checked></td><td><img style="padding-left:3px;" src="{{ STATIC_URL }}stars/iconYellowStar_25x25.gif" /></td></tr>		
+					<tr title="50+"><td><input type="radio" name="rdoPrice" value="50" ></td><td><img style="padding-left:3px;" src="{{ STATIC_URL }}stars/iconBlueStar_25x25.gif" /></td></tr>
+					<tr title="100+"><td><input type="radio" name="rdoPrice" value="100" ></td><td><img style="padding-left:3px;" src="{{ STATIC_URL }}stars/iconTealStar_25x25.gif" /></td></tr>
+					<tr title="500+"><td><input type="radio" name="rdoPrice" value="500"></td><td><img style="padding-left:3px;" src="{{ STATIC_URL }}stars/iconPurpleStar_25x25.gif" /></td></tr>
+					<tr title="1000+"><td><input type="radio" name="rdoPrice" value="1000" ></td><td><img style="padding-left:3px;" src="{{ STATIC_URL }}stars/iconRedStar_25x25.gif" /></td></tr>
+					<tr title="5000+"><td><input type="radio" name="rdoPrice" value="5000"></td><td><img style="padding-left:3px;" src="{{ STATIC_URL }}stars/iconGreenStar_25x25.gif" /></td></tr>
+					<tr title="10000+"><td><input type="radio" name="rdoPrice" value="10000" ></td><td><img style="padding-left:3px;" src="{{ STATIC_URL }}stars/stars-11.gif" /></td></tr>
+					<tr title="25000+"><td><input type="radio" name="rdoPrice" value="25000" ></td><td><img style="padding-left:3px;" src="{{ STATIC_URL }}stars/stars-12.gif" /></td></tr>
+	
+				</table>
+		</div>
+    </div>
+  </fieldset>
+  </form>
+
+ </div>
+ </div>
+	{% if output != ''%}
+		<div class="row-fluid">
+		<div class="span6 offset3 contentBox"  align="center" style="padding-bottom: 50px">
+		<h3 style="font-size:14px;">You just bought:</h3>
+		{% if imgUrl != ''%}
+			{% if imgUrl|lower != 'could not get supersize image' %}
+				<a href="{{output}}"><img src="{{imgUrl}}" width=350 height=350 /></a>
+			{% else %}
+				<a href="{{output}}">{{output}}</a>
+			{% endif %}
+		{% else%}
+			<a href="{{output}}">{{output}}</a>
+		{% endif %}
+		</div>
+		</div>
+	{% endif %}
+   </div>
+  </div>
+ 
+ </div>
+ 
+    <script>function hide(id){document.getElementById(id).type="hidden"; a=document.getElementById('bigLogin');a.value='GO';}
+			</script>
+    <script src="{{STATIC_URL}}assets/js/jquery.js"></script>
+    <script src="{{STATIC_URL}}assets/js/bootstrap-transition.js"></script>
+    <script src="{{STATIC_URL}}assets/js/bootstrap-alert.js"></script>
+    <script src="{{STATIC_URL}}assets/js/bootstrap-modal.js"></script>
+    <script src="{{STATIC_URL}}assets/js/bootstrap-dropdown.js"></script>
+    <script src="{{STATIC_URL}}assets/js/bootstrap-scrollspy.js"></script>
+    <script src="{{STATIC_URL}}assets/js/bootstrap-tab.js"></script>
+    <script src="{{STATIC_URL}}assets/js/bootstrap-tooltip.js"></script>
+    <script src="{{STATIC_URL}}assets/js/bootstrap-popover.js"></script>
+    <script src="{{STATIC_URL}}assets/js/bootstrap-button.js"></script>
+    <script src="{{STATIC_URL}}assets/js/bootstrap-collapse.js"></script>
+    <script src="{{STATIC_URL}}assets/js/bootstrap-carousel.js"></script>
+    <script src="{{STATIC_URL}}assets/js/bootstrap-typeahead.js"></script>
+  </body>
+  
+  <center>
+	<a href="#" onclick="HideMe()">Directions [+/-]</a>
+	<div id="Directions" style="visibility:hidden">
+		Enter in a maximum price in US dollars that you are willing to pay,
+	<br>and this webappwill buy a random item from eBay.
+	<br>Suprise yourself and GetSomething!
+	
+	</div>
+  </center>
+  
+  
+  
+    <script>
+ function HideMe()
+	{
+		if (document.getElementById("Directions").style.visibility == "hidden")
+			document.getElementById("Directions").style.visibility = "visible";
+		else
+			document.getElementById("Directions").style.visibility = "hidden";
+	}
+	</script>
+  
+  
+  <center><footer></footer></center>
+</html>   
